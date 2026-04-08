@@ -16,7 +16,7 @@ export default function Page() {
 
       {/* 🎬 HERO con video de fondo */}
       <div className="w-full border-b border-fuchsia-700/50 shadow-[0_0_40px_rgba(255,0,255,0.4)]">
-        <BackgroundVideo src="/videos/89894-616430996.mp4" overlay={true}>
+        <BackgroundVideo src="https://res.cloudinary.com/dtumxfszf/video/upload/v1775620413/89894-616430996_zh7jqk.mp4" overlay={true}>
           <Hero />
         </BackgroundVideo>
       </div>
