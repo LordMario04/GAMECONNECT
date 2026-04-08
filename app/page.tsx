@@ -1,6 +1,5 @@
 "use client";
 import BackgroundVideo from "@/components/features/BackgroundVideo";
-import { CarouselSpacing } from "@/components/features/CarouselDemo";
 import FAQSection from "@/components/features/FAQSection";
 import Hero from "../components/ui/HeroParallaxDemo";
 import React, { useRef } from "react";

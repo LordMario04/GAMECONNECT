@@ -8,9 +8,7 @@ export default function Hero() {
         GAME <br /> CONNECT
       </h1>
       <p className="max-w-xl text-base md:text-xl mt-6 text-white text-left">
-        We build beautiful products with the latest technologies and frameworks.
-        We are a team of passionate developers and designers that love to build
-        amazing products.
+        Tu portal definitivo para descubrir, conectar y disfrutar de los mejores juegos. Únete a nuestra comunidad y lleva tu experiencia de juego al siguiente nivel.
       </p>
     </div>
   );
