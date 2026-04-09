@@ -155,13 +155,6 @@ export default function Header() {
           <NavButton href="/">Inicio</NavButton>
           <NavButton href="/noticias">Noticias</NavButton>
           <DropdownMenu
-            title="Ingresar Como"
-            items={[
-              { href: "/empleado", label: "Como Empleado" },
-              { href: "/admin", label: "Como Administrador" },
-            ]}
-          />
-          <DropdownMenu
             title="Secciones"
             items={[
               { href: "/catalogo", label: "Catálogo de Juegos" },

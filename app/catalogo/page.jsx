@@ -1,104 +1,107 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { supabase } from "@/supabase/client";
+import { useCart } from "@/components/features/CartContext"; 
 
 export default function Games() {
   const [products, setProducts] = useState([]);
-useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("https://pi-backend2-go2o.onrender.com/api/products");
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setProducts(data);
-    } catch (err) {
-      console.error("Error al obtener productos:", err);
-    }
-  };
+  const [search, setSearch] = useState("");
+  const [tematica, setTematica] = useState("Todos");
+  const { addToCart } = useCart();
 
-  fetchProducts();
-}, []);
+  const tematicas = ["Todos", "Acción", "Aventura", "RPG", "Estrategia", "Simulación", "Deportes"];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+      if (error) console.error(error);
+      else setProducts(data);
+    };
+    fetchProducts();
+  }, []);
+
+  const filtered = products.filter((p) => {
+    const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase());
+    const matchTematica = tematica === "Todos" || p.tematica === tematica;
+    return matchSearch && matchTematica;
+  });
 
   return (
-    <div className="min-h-screen bg-[#06141B] text-white">
-      {/* 🔹 HEADER */}
-      <header className="flex items-center justify-between px-8 py-4 bg-[#0B1D26] shadow-lg fixed top-0 left-0 w-full z-50">
-        <div className="flex items-center gap-3">
-          <img
-            src="/images/logo-2078018_1280.png"
-            alt="GameConnect Logo"
-            className="h-10 w-auto"
-          />
-          <h1 className="text-xl font-bold">GameConnect</h1>
-        </div>
-
-        <nav className="flex items-center gap-6">
-          <a href="#" className="font-semibold hover:text-cyan-400 transition">
-            Inicio
-          </a>
-          <a href="#" className="font-semibold text-cyan-400">
-            Juegos
-          </a>
-          <a href="#" className="font-semibold hover:text-cyan-400 transition">
-            Ofertas
-          </a>
-          <a href="#" className="font-semibold hover:text-cyan-400 transition">
-            Contacto
-          </a>
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <input
-            type="text"
-            placeholder="Buscar un juego"
-            className="px-4 py-2 rounded-full bg-transparent border border-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          />
-          <img
-            src="/images/user.png"
-            alt="Usuario"
-            className="h-8 w-8 rounded-full border border-gray-500"
-          />
-        </div>
-      </header>
-
-      {/* 🔹 TITULO CENTRAL */}
-      <main className="flex flex-col items-center justify-center h-screen text-center">
+    <div className="min-h-screen bg-[#06141B] text-white px-10 py-12">
+      {/* TÍTULO */}
+      <div className="text-center mb-10">
         <h2 className="text-4xl md:text-5xl font-extrabold leading-snug">
-          Aquí podrás encontrar todos nuestros <br /> juegos.
+          Aquí podrás encontrar todos <br /> nuestros juegos.
         </h2>
-      </main>
+        <input
+          type="text"
+          placeholder="Buscar un juego..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="mt-6 px-4 py-2 rounded-full bg-transparent border border-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 w-72"
+        />
+      </div>
 
-      {/* 🔹 GRID DE PRODUCTOS */}
-      <section className="px-10 pb-16 -mt-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((p) => (
-            <div
-              key={p.id}
-              className="relative rounded-xl shadow-lg overflow-hidden h-80 transform transition hover:scale-105 duration-300"
-            >
-              {/* Imagen de producto */}
-              <img
-                src={p.images?.[0] || "https://via.placeholder.com/300"}
-                alt={p.name}
-                className="w-full h-full object-cover"
-              />
+      {/* FILTROS */}
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {tematicas.map((t) => (
+          <button
+            key={t}
+            onClick={() => setTematica(t)}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+              tematica === t
+                ? "bg-[#00ffff] text-black"
+                : "border border-[#00ffff40] text-white hover:bg-[#00ffff20]"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
-              {/* Overlay oscuro */}
-              <div className="absolute inset-0 bg-black/60 flex flex-col justify-end p-6 text-center">
-                <h3 className="text-xl font-bold">{p.name}</h3>
-                <p className="text-sky-400">{p.brand}</p>
-                <p className="text-gray-400 text-sm">{p.slug}</p>
-                <p className="mt-2 text-lg font-semibold text-green-400">
-                  ${p.price}
-                </p>
-              </div>
+      {/* GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.map((p) => (
+          <div
+            key={p.id}
+            className="relative rounded-xl shadow-lg overflow-hidden h-80 transform transition hover:scale-105 duration-300"
+          >
+            <img
+              src={p.image_url || "https://via.placeholder.com/300"}
+              alt={p.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/60 flex flex-col justify-end p-6 text-center">
+              {p.feature && (
+                <span className="text-xs font-bold text-[#00ffff] uppercase mb-1">{p.feature}</span>
+              )}
+              <h3 className="text-xl font-bold">{p.name}</h3>
+              <p className="text-sky-400 text-sm">{p.brand}</p>
+              <p className="text-gray-400 text-xs">{p.tematica}</p>
+              <p className="mt-2 text-lg font-semibold text-green-400">${p.price}</p>
+
+              {/* 👇 BOTÓN AÑADIR AL CARRITO */}
+              <button
+                onClick={() => addToCart({
+                  id: p.id,
+                  name: p.name,
+                  price: p.price,
+                  image_url: p.image_url,
+                })}
+                className="mt-3 w-full py-2 rounded-lg font-bold text-sm text-black uppercase tracking-wide transition-all hover:scale-105"
+                style={{
+                  background: "linear-gradient(90deg, #00ffff 0%, #7dffb2 100%)",
+                  boxShadow: "0 0 10px #00ffff60",
+                }}
+              >
+                Añadir al carrito
+              </button>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
